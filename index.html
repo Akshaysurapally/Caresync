@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CareSync – Pro Smart Health Management</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- UI enhancements (non-breaking, does not change existing IDs or scripts) -->
+ 
+</head>
+<body data-theme="light">
+
+  <!-- HEADER -->
+  <header class="site-header" role="banner">
+
+ <div class="brand">
+  <img src="assets/caresync.png" alt="CareSync Pro Logo" class="brand-logo">
+ 
+  <span class="brand-name" onclick="window.location.href='admin.js';" style="cursor:pointer;">
+  CareSync
+</span>
+
+
+
+    <span class="tagline muted small">Smart Health · Demo</span>
+     </div>
+     </div>
+    <div class="top-actions" role="navigation" aria-label="Top actions">
+      <div id="currentUserDisplay" class="muted small" aria-live="polite">Not signed in</div>
+      
+      <button id="themeToggle" class="ghost" title="Toggle theme" aria-label="Toggle theme">dark Theme🌗</button>
+      <button id="authBtn" class="btn" aria-haspopup="dialog" aria-controls="authModal">Login / Signup</button>
+    </div>
+  </header>
+
+  <!-- MAIN LAYOUT -->
+  <div class="container">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="s-card" id="sidebarCard">
+        <div style="display:flex;gap:12px;align-items:center">
+          <img id="sidebarAvatar" class="avatar" src="" alt="" />
+          <div>
+            <div id="sidebarName" style="font-weight:800">Guest</div>
+            <div id="sidebarRole" class="muted small">Visitor</div>
+          </div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid rgba(0,0,0,0.04);margin:10px 0" />
+
+        <div id="navLinks">
+          <div class="navlink nav-active" data-page="home">🏠 Dashboard</div>
+          <div class="navlink" data-page="iot">📈 Live IoT</div>
+          <div class="navlink" data-page="predict">🤖 AI Predict</div>
+          <div class="navlink" data-page="appointments">📅 Appointments</div>
+          <div class="navlink" data-page="profile">👤 Profile</div>
+          <div class="navlink" data-page="admin" id="adminLink" style="display:none">🛠 Admin</div>
+        </div>
+
+        <div style="margin-top:10px;display:block">
+  <button id="notifyCenterBtn" class="navlink">
+    🔔 Notifications (<span id="notifCount">0</span>)
+  </button><br>
+  <button id="logoutBtn" class="ghost hidden" style="margin-top:8px;">Logout</button>
+</div>
+
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+      <!-- Home / Dashboard -->
+      <div id="page_home" class="page card fade-enter-active">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div>
+            <h2>Welcome to CareSync</h2>
+            <p class="muted">AI + IoT powered demo. Role-based features available for Admin, Doctor and Patient.</p>
+          </div>
+          <div style="text-align:right">
+            <div class="muted small">Server time</div>
+            <div id="serverTime" style="font-weight:800"></div>
+          </div>
+        </div>
+
+        <div class="grid cols-3" style="margin-top:14px">
+          <div class="card">
+            <div class="muted small">Patients</div>
+            <div style="font-size:28px;font-weight:800" id="statPatients">0</div>
+            <div class="muted small">Total patients registered</div>
+          </div>
+          <div class="card">
+            <div class="muted small">Doctors</div>
+            <div style="font-size:28px;font-weight:800" id="statDoctors">0</div>
+            <div class="muted small">Active doctors</div>
+          </div>
+          <div class="card">
+            <div class="muted small">Appointments</div>
+            <div style="font-size:28px;font-weight:800" id="statAppointments">0</div>
+            <div class="muted small">Pending / upcoming</div>
+          </div>
+        </div>
+
+        <div class="grid cols-2" style="margin-top:14px">
+          <div class="card">
+            <h3>Recent Notifications</h3>
+            <div id="recentNotifs" class="muted small">No notifications yet.</div>
+          </div>
+          <div class="card">
+            <h3>Quick Actions</h3>
+            <div style="display:flex;gap:8px">
+              <button class="btn" onclick="showPage('predict')">Run AI Predict</button>
+              <button class="navlink" onclick="showPage('appointments')">Manage Appointments</button>
+              <button class="navlink" onclick="showPage('iot')">Open IoT Dashboard</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live IoT -->
+      <div id="page_iot" class="page hidden card">
+        <h2>Live IoT Dashboard</h2>
+        <p class="muted">Simulated real-time streams. Replace with socket/API integration to feed real devices.</p>
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+          <div style="flex:1;min-width:280px" class="card">
+            <div class="muted small">Heart rate (bpm)</div>
+            <canvas id="chartHR" height="120"></canvas>
+            <div class="muted small" id="hrNow">Current: -- bpm</div>
+          </div>
+
+          <div style="flex:1;min-width:280px" class="card">
+            <div class="muted small">SpO₂ (%)</div>
+            <canvas id="chartSpO2" height="120"></canvas>
+            <div class="muted small" id="spNow">Current: -- %</div>
+          </div>
+
+          <div style="flex:1;min-width:280px" class="card">
+            <div class="muted small">Glucose (mg/dL)</div>
+            <canvas id="chartGluc" height="120"></canvas>
+            <div class="muted small" id="glucNow">Current: -- mg/dL</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="card">
+          <h3>Device Controls (Simulator)</h3>
+          <p class="muted small">Use simulator controls to toggle stream or create a spike for alert testing.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button id="toggleStreamBtn" class="btn">Pause Stream</button>
+            <button onclick="createSpike('hr')" class="ghost">Spike HR</button>
+            <button onclick="createSpike('sp')" class="ghost">Drop SpO₂</button>
+            <button onclick="createSpike('gl')" class="ghost">Spike Glucose</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Predict -->
+      <div id="page_predict" class="page hidden card">
+  <h2>AI Health Prediction</h2>
+  <p class="muted">Enter key vitals to get instant risk predictions (simulated). You can wire this to a real API by replacing <code>simulateAIPredict()</code> with your fetch to an OpenAI/ML endpoint.</p>
+
+  <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:12px">
+    
+    <!-- Input Card -->
+    <div style="flex:1; min-width:260px" class="card">
+      <label>Age</label><input id="p_age" type="text" placeholder="e.g., 54">
+      <label>BMI</label><input id="p_bmi" type="text" placeholder="e.g., 27.5">
+      <label>HbA1c (%)</label><input id="p_hba1c" type="text" placeholder="e.g., 6.3">
+      <label>Heart Rate (bpm)</label><input id="p_hr" type="text" placeholder="e.g., 82">
+      <label>Blood Pressure (systolic)</label><input id="p_sys" type="text" placeholder="e.g., 130">
+      <div style="display:flex; gap:8px; margin-top:8px">
+        <button class="btn" onclick="runAIPredict()">Run Prediction</button>
+        <button class="ghost" onclick="clearPredict()">Clear</button>
+      </div>
+    </div>
+
+    <!-- Prediction Card -->
+    <div style="flex:1; min-width:320px" class="card">
+      <h3>Prediction Result</h3>
+      <div id="predictResult" style="font-weight:800; font-size:18px">No prediction yet.</div>
+      <div id="predictDetails" class="muted small" style="margin-top:6px">
+        Results will appear here — simulated probabilities and advice.
+      </div>
+      <div style="margin-top:12px">
+        <small class="muted">Note: This is a demo. For clinical use, integrate an approved medical model and validate outputs.</small>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+      <!-- Appointments -->
+      <div id="page_appointments" class="page hidden card">
+        <h2>Appointments</h2>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+          <div style="flex:1;min-width:320px" class="card">
+            <h3>Book Appointment (Patient)</h3>
+            <label>Doctor</label>
+            <select id="apptDoctorSelect"></select>
+            <label>Date & Time</label>
+            <input id="apptDatetime" type="datetime-local">
+            <label>Reason</label>
+            <textarea id="apptReason" rows="3"></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="btn" onclick="bookAppointment()">Request Appointment</button>
+              <button class="ghost" onclick="clearApptForm()">Clear</button>
+            </div>
+          </div>
+
+          <div style="flex:1;min-width:320px" class="card">
+            <h3>Pending Requests (Doctor)</h3>
+            <div id="pendingAppts">No pending requests.</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="card">
+          <h3>All Appointments</h3>
+          <div id="allAppts">No appointments</div>
+        </div>
+      </div>
+
+      <!-- Profile -->
+      <div id="page_profile" class="page hidden card">
+        <h2>Profile</h2>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <div style="flex:1;min-width:280px" class="card">
+            <label>Profile Photo</label>
+            <input id="profileImageInput" type="file" accept="image/*">
+            <img id="profilePreview" class="avatar" src="" alt="preview" style="display:block;margin-top:10px" />
+          </div>
+          <div style="flex:2;min-width:280px" class="card">
+            <label>Full name</label><input id="profileName" type="text">
+            <label>Email</label><input id="profileEmail" type="email">
+            <label>Role</label>
+            <select id="profileRole">
+              <option value="Patient">Patient</option>
+              <option value="Doctor">Doctor</option>
+              <option value="Admin">Admin</option>
+            </select>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="btn" onclick="saveProfile()">Save Profile</button>
+              <button class="ghost" onclick="loadProfile()">Revert</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Panel -->
+      <div id="page_admin" class="page hidden card">
+        <h2>Admin - User Management</h2>
+        <div class="card">
+          <h3>Users</h3>
+          <div id="adminUsersList">No users</div>
+        </div>
+        <div class="card">
+          <h3>Create User (Quick)</h3>
+          <label>Username</label><input id="adminNewUser">
+          <label>Password</label><input id="adminNewPass" type="password">
+          <label>Role</label>
+          <select id="adminNewRole"><option>Patient</option><option>Doctor</option><option>Admin</option></select>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" onclick="adminCreateUser()">Create</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- AUTH MODAL (simple) -->
+      <div id="authModal" class="card hidden" style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(720px,96%);z-index:120">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3 id="authTitle">Login / Signup</h3>
+          <button onclick="closeAuth()" class="ghost">✕</button>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+          <div style="flex:1;min-width:240px">
+            <label>Username</label><input id="authUser" placeholder="username (unique)">
+            <label>Password</label><input id="authPass" type="password">
+            <label>Role (signup only)</label>
+            <select id="authRole"><option value="">(select to signup)</option><option>Patient</option><option>Doctor</option><option>Admin</option></select>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="btn" onclick="authSignup()">Signup</button>
+              <button class="ghost" onclick="authLogin()">Login</button>
+            </div>
+            <div style="margin-top:8px" class="muted small">Tip: create roles to see role-based pages (Admin shows Admin panel).</div>
+          </div>
+          <div style="flex:1;min-width:240px">
+            <h4>Demo Accounts</h4>
+            <div class="muted small">
+              <ul>
+                <li><b>admin</b> / pass (Admin)</li>
+                <li><b>dr</b> / pass (Doctor)</li>
+                <li><b>patient</b> / pass (Patient)</li>
+              </ul>
+              Click the buttons below to autofill.
+            </div>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="ghost" onclick="prefill('admin')">admin</button>
+              <button class="ghost" onclick="prefill('dr')">dr</button>
+              <button class="ghost" onclick="prefill('patient')">patient</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Notifications container -->
+  <div class="notif-wrap" id="notifWrap"></div>
+
+  <!-- JS modules -->
+  <script src="assets/db.js"></script>
+  <script src="assets/utils.js"></script>
+  <script src="assets/notifications.js"></script>
+  <script src="assets/iot.js"></script>
+  <script src="assets/ai.js"></script>
+  <script src="assets/appointments.js"></script>
+  <script src="assets/profile.js"></script>
+  <script src="assets/admin.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
+
+
